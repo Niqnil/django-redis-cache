@@ -1,0 +1,36 @@
+# cd django_3_by_example_myshop && docker-compose up --build
+# pipenv shell
+# django-admin startproject [project] .
+
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: 'example'
+    command: python /code/manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - 8000:8000
+    depends_on:
+      - redis_cache
+    networks:
+      - redis_cache_net
+
+  redis_cache:
+    image: "redis:3.2.0"
+    container_name: 'redis_cache'
+    command: redis-server # --requirepass testpass123
+    ports:
+      - 6379:6379
+    volumes:
+      - /redis-data:/var/lib/redis
+      - /redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - redis_cache_net
+
+
+networks:
+  redis_cache_net:
+    driver: bridge
